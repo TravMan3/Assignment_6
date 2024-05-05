@@ -13,7 +13,7 @@ public class Tesla {
 	public Tesla() {
 		super();
 		this.date = " ";
-		this.sales = " ";
+		this.sales = 0;
 	}
 
 	@Override

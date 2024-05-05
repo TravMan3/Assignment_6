@@ -4,9 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class TeslaServices {
 
@@ -28,8 +29,8 @@ public class TeslaServices {
 		return car;
 	}
 	
-	public static List<Integer> totalForEachYear (List<Tesla> carSales) {
-		List<Integer> totalSalesForEachYear = new ArrayList<>();
+	public static List<Tesla> totalForEachYear (List<Tesla> carSales) {
+		List<Tesla> totalSalesForEachYear = new ArrayList<>();
 		int year = 16;
 		while( year <= 19) {
 			String yearString = String.valueOf(year);
@@ -48,7 +49,41 @@ public class TeslaServices {
 		return totalSalesForEachYear;
 	}
 	
-	public void printReports (String model, String fileName) {
-		System.out.println(model + "Yearly Sales Report");
+	public Optional<Tesla> bestMonth (List<Tesla> carSales){
+		Optional<Tesla> bestMonth = carSales.stream()
+										.max(Comparator.comparingInt(tesla -> tesla.getSales()));
+		return bestMonth;
+	}
+	public Optional<Tesla> worstMonth (List<Tesla> carSales){
+		Optional<Tesla> worstMonth = carSales.stream()
+											 .min(Comparator.comparingInt(tesla -> tesla.getSales()));
+		return worstMonth;
+	}
+	public void printReports (String model, String fileName) throws IOException {
+		System.out.println(" ");
+		System.out.println(model + " Yearly Sales Report");
+		System.out.println("------------------------");
+		List<Tesla> readCSV = readCSV(fileName);
+		List<Tesla> totalSales = totalForEachYear(readCSV);
+		int i = 0;
+		while(totalSales != null && i < totalSales.size()) {
+			System.out.println("20" + totalSales.get(i).getDate() + 
+					" -> " + totalSales.get(i).getSales());
+			i++;
+		}
+		System.out.println(" ");
+		Optional<Tesla> best = bestMonth(readCSV);
+		bestAndWorstPrint(model, best, "best");
+		
+		Optional<Tesla> worst = worstMonth(readCSV);
+		bestAndWorstPrint(model, worst, "worst");
+		System.out.println(" ");
+	}
+
+	private void bestAndWorstPrint(String model, Optional<Tesla> best, String is) {
+		String year = best.get().getDate().substring(4,6);
+		String month = best.get().getDate().substring(0, 3);
+		System.out.println("The " + is + " month for " + model + " was: " 
+		+ "20" + year + "-" + month );
 	}
 }
