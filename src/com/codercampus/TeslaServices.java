@@ -29,10 +29,10 @@ public class TeslaServices {
 		return car;
 	}
 	
-	public static List<Tesla> totalForEachYear (List<Tesla> carSales) {
+	public static List<Tesla> totalForEachYear (List<Tesla> carSales, int startYear, int endYear) {
 		List<Tesla> totalSalesForEachYear = new ArrayList<>();
-		int year = 16;
-		while( year <= 19) {
+		int year = startYear;
+		while( year <= endYear) {
 			String yearString = String.valueOf(year);
 			List<Tesla> totalSalesForYear = carSales.stream()
 											 		.filter(tesla -> tesla.getDate().contains(yearString))
@@ -64,7 +64,9 @@ public class TeslaServices {
 		System.out.println(model + " Yearly Sales Report");
 		System.out.println("------------------------");
 		List<Tesla> readCSV = readCSV(fileName);
-		List<Tesla> totalSales = totalForEachYear(readCSV);
+		int firstYear = year(readCSV, 0);
+		int lastYear = year(readCSV, readCSV.size()-1);
+		List<Tesla> totalSales = totalForEachYear(readCSV,firstYear,lastYear);
 		int i = 0;
 		while(totalSales != null && i < totalSales.size()) {
 			System.out.println("20" + totalSales.get(i).getDate() + 
@@ -78,6 +80,14 @@ public class TeslaServices {
 		Optional<Tesla> worst = worstMonth(readCSV);
 		bestAndWorstPrint(model, worst, "worst");
 		System.out.println(" ");
+	}
+
+	private int year(List<Tesla> readCSV, int index) {
+		String yearString = readCSV.get(index).getDate();
+		String[] part = yearString.split("-");
+		String string = part[1];
+		int year = Integer.parseInt(string);
+		return year;
 	}
 
 	private void bestAndWorstPrint(String model, Optional<Tesla> best, String is) {
